@@ -3,7 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-import datetime
+from datetime import datetime, date
 
 
 USER = get_user_model()
@@ -30,8 +30,8 @@ class Author(BaseModel):
     id = models.BigAutoField(primary_key=True, editable=False, unique=True)
     first_name = models.CharField(max_length=50, null=False, blank=False)
     last_name = models.CharField(max_length=50, null=False, blank=False)
-    born = models.DateField()
-    died = models.DateField()
+    born = models.DateField(null=False, blank=False)
+    died = models.DateField(null=True, blank=True)
     passed = models.BooleanField(default=False)
     gender = models.CharField(max_length=2, choices=Gender.choices, default=Gender.NO)
     slug = models.SlugField(null=False, blank=False, unique=True)
@@ -54,14 +54,15 @@ class Author(BaseModel):
         return reverse('author-detail', kwargs={'slug': self.slug})
     
     def save(self, *args, **kwargs):
+        self.passed = True if self.died is not None else False
         self.slug = slugify(f'{self.last_name}-{self.first_name}') if not self.slug else self.slug
         super(Author, self).save(*args, **kwargs)
 
     @property
     def age(self):
         if self.passed:
-            delta = self.died.date - self.born.date
+            delta = self.died - self.born
             return delta.days // 365
         else:
-            delta = datetime.datetime.date() - self.born.date
-            return delta.days // 365            
+            delta = date.today() - self.born
+            return delta.days // 365
