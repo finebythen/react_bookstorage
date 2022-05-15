@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.forms import ValidationError
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from datetime import datetime, date
@@ -50,13 +51,17 @@ class Author(BaseModel):
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name}'
     
-    def get_absolute_url(self):
-        return reverse('author-detail', kwargs={'slug': self.slug})
-    
     def save(self, *args, **kwargs):
         self.passed = True if self.died is not None else False
         self.slug = slugify(f'{self.last_name}-{self.first_name}') if not self.slug else self.slug
         super(Author, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('author-detail', kwargs={'slug': self.slug})
+    
+    def clean(self):
+        if self.born > self.died:
+            raise ValidationError("Date of born can't be further in time than date of death!")
 
     @property
     def age(self):
