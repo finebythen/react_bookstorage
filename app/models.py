@@ -1,10 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.forms import ValidationError
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from datetime import datetime, date
+from datetime import date
 
 
 USER = get_user_model()
@@ -71,3 +70,50 @@ class Author(BaseModel):
         else:
             delta = date.today() - self.born
             return delta.days // 365
+
+
+class Book(BaseModel):
+
+    class Genre(models.TextChoices):
+        CRIME = 'CR', 'Crime'
+        EDUCATION = 'ED', 'Education'
+        FANTASY = 'FA', 'Fantasy'
+        FICTION = 'FI', 'Fiction'
+        NO = 'NO', 'No genre'
+        NONFICTION = 'NF', 'Non Fiction'
+        ROMANCE = 'RO', 'Romance'
+        THRILLER = 'TH', 'Thriller'
+    
+    id = models.BigAutoField(primary_key=True, unique=True)
+    author = models.ForeignKey(Author, null=False, blank=False, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, null=False, blank=False)
+    description = models.TextField(max_length=500, null=True, blank=True)
+    genre = models.CharField(max_length=2, choices=Genre.choices, default=Genre.NO)
+    pages = models.PositiveIntegerField(default=0)
+    slug = models.SlugField(null=False, blank=False, unique=True)
+
+    class Meta:
+        ordering = ['title']
+        constraints = [
+            models.UniqueConstraint(fields=['author', 'title'], name='uniqe-author-title-constraint'),
+        ]
+        indexes = [
+            models.Index(fields=['author', 'title'], name='index-author-title'),
+        ]
+        verbose_name = 'Book'
+        verbose_name_plural = 'Books'
+
+    def __str__(self) -> str:
+        return self.title[:50]
+
+    def save(self, *args, **kwargs):
+        self.description = 'No description' if not self.description else self.description
+        self.slug = slugify(f'{self.author}-{self.title}') if not self.slug else self.slug
+        super(Book, self).super(*args, **kwargs)
+    
+    def get_absolute_url(self):
+        return reverse('book-detail', kwargs={'slug': self.slug})
+    
+    @property
+    def full_description(self):
+        return f'{self.title} from {self.author__first_name} {self.author__last_name}'
