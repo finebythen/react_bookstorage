@@ -91,6 +91,7 @@ class Book(BaseModel):
     genre = models.CharField(max_length=2, choices=Genre.choices, default=Genre.NO)
     pages = models.PositiveIntegerField(default=0)
     slug = models.SlugField(null=False, blank=False, unique=True)
+    published = models.DateField(null=False, blank=False)
 
     class Meta:
         ordering = ['title']
@@ -109,7 +110,7 @@ class Book(BaseModel):
     def save(self, *args, **kwargs):
         self.description = 'No description' if not self.description else self.description
         self.slug = slugify(f'{self.author}-{self.title}') if not self.slug else self.slug
-        super(Book, self).super(*args, **kwargs)
+        super(Book, self).save(*args, **kwargs)
     
     def get_absolute_url(self):
         return reverse('book-detail', kwargs={'slug': self.slug})

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Author
+from .models import Author, Book
 
 
 class AuthorAdmin(admin.ModelAdmin):
@@ -7,5 +7,12 @@ class AuthorAdmin(admin.ModelAdmin):
     list_filter = ('last_name',)
     prepopulated_fields = {'slug': ('last_name', 'first_name',)}
 
+
+class BookAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'author', 'published',)
+    prepopulated_fields = {'slug': ('author', 'title',)}
+
+
 admin.site.site_header = 'React Bookstorage (0.0.1)'
 admin.site.register(Author, AuthorAdmin)
+admin.site.register(Book, BookAdmin)
