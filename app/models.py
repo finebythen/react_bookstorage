@@ -10,6 +10,7 @@ USER = get_user_model()
 
 
 class BaseModel(models.Model):
+    id = models.BigAutoField(primary_key=True, editable=False, unique=True)
     created_by = models.ForeignKey(USER, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -27,7 +28,6 @@ class Author(BaseModel):
         FEMALE = 'FE', 'Female'
         MALE = 'MA', 'Male'
 
-    id = models.BigAutoField(primary_key=True, editable=False, unique=True)
     first_name = models.CharField(max_length=50, null=False, blank=False)
     last_name = models.CharField(max_length=50, null=False, blank=False)
     born = models.DateField(null=False, blank=False)
@@ -59,7 +59,7 @@ class Author(BaseModel):
         return reverse('author-detail', kwargs={'slug': self.slug})
     
     def clean(self):
-        if self.born > self.died:
+        if self.died is not None and self.born > self.died:
             raise ValidationError("Date of born can't be further in time than date of death!")
 
     @property
@@ -83,8 +83,7 @@ class Book(BaseModel):
         NONFICTION = 'NF', 'Non Fiction'
         ROMANCE = 'RO', 'Romance'
         THRILLER = 'TH', 'Thriller'
-    
-    id = models.BigAutoField(primary_key=True, unique=True)
+
     author = models.ForeignKey(Author, null=False, blank=False, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, null=False, blank=False)
     description = models.TextField(max_length=500, null=True, blank=True)
