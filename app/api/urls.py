@@ -2,7 +2,13 @@ from django.urls import path
 from rest_framework.schemas import get_schema_view
 from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 from .tokens import MyTokenObtainPairView
-from .views import AuthorListCreateView, AuthorRetrieveUpdateDestroyView, BookListCreateView, BookRetrieveUpdateDestroyView
+from .views import (
+    AuthorListCreateView,
+    AuthorRetrieveUpdateDestroyView,
+    BookListCreateView,
+    BookRetrieveUpdateDestroyView,
+    CsvExportBookView
+)
 
 
 urlpatterns = [
@@ -16,4 +22,6 @@ urlpatterns = [
     path('author/<slug:slug>/', AuthorRetrieveUpdateDestroyView.as_view(), name='author-detail'),
     path('book/', BookListCreateView.as_view(), name='book-list'),
     path('book/<slug:slug>/', BookRetrieveUpdateDestroyView.as_view(), name='book-detail'),
+
+    path('export-csv/book/', CsvExportBookView.as_view(), name='book-export-csv'),
 ]
