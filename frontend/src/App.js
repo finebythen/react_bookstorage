@@ -1,8 +1,9 @@
 import './App.css';
 import Layout from './components/Layout';
-import { Routes, Route, Outlet, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import PrivateRoute from './utils/PrivateRoute';
 import AuthorsList from './features/authors/AuthorsList';
+import BooksList from './features/books/BooksList';
 import Login from './pages/Login';
 import { AuthProvider } from './context/AuthContext';
 
@@ -13,7 +14,8 @@ const App = () => {
 				<Route path="/login" element={<Login />} />
 				<Route element={<PrivateRoute />}>
 					<Route path="/" element={<Layout />}>
-						<Route path="/author" element={<AuthorsList />} />						
+						<Route path="/author" element={<AuthorsList />} />
+						<Route path="/book" element={<BooksList />} />
 					</Route>
 
 					{/* Catch all - could be replaced with 404 if wanted */}

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios';
 
-const GET_URL = 'http://127.0.0.1:8000/api/author/';
+const BASE_URL = 'http://127.0.0.1:8000/api/author/';
 
 const initialState = {
     authors: [],
@@ -10,7 +10,7 @@ const initialState = {
 };
 
 export const getAuthors = createAsyncThunk('api/author', async () => {
-    const response = await axios.get(GET_URL);
+    const response = await axios.get(BASE_URL);
     return response.data.results;
 })
 
