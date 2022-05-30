@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.views import APIView
 from ..models import Author, Book
+from .paginations import CustomBookPagination
 from .serializers import AuthorSerializer, BookSerializer
 
 
@@ -20,6 +21,7 @@ class AuthorRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 class BookListCreateView(ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    pagination_class = CustomBookPagination
 
 
 class BookRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):

@@ -14,6 +14,11 @@ export const getBooks = createAsyncThunk('api/book', async () => {
     return response.data.results;
 });
 
+export const postBook = createAsyncThunk('api/book', async(initialBook) => {
+    const response = await axios.post(BASE_URL, initialBook);
+    return response.data;
+});
+
 const booksSlice = createSlice({
     name: 'books',
     initialState,
