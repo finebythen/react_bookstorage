@@ -9,14 +9,35 @@ const initialState = {
     error: null
 };
 
-export const getBooks = createAsyncThunk('api/book', async () => {
-    const response = await axios.get(BASE_URL);
-    return response.data.results;
+export const getBooks = createAsyncThunk('api/getBooks', async (id=null, { rejectWithValue }) => {
+    try {
+        const response = await axios.get(BASE_URL);
+        return response.data.results;
+    } catch (err) {
+        console.log(err);
+        return rejectWithValue(err.response.data);
+    }
 });
 
-export const postBook = createAsyncThunk('api/book', async(initialBook) => {
-    const response = await axios.post(BASE_URL, initialBook);
-    return response.data;
+export const postBook = createAsyncThunk('api/postBook', async(book, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(BASE_URL, book);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return rejectWithValue(err.response.data);
+    }
+});
+
+export const updateBook = createAsyncThunk('api/updateBook', async(book, { rejectWithValue }) => {
+    try {
+        const { slug } = book;
+        const response = await axios.put(`${BASE_URL}/${slug}`, book);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return rejectWithValue(err.response.data);
+    }
 });
 
 const booksSlice = createSlice({
@@ -37,5 +58,7 @@ const booksSlice = createSlice({
             })
     }
 });
+
+export const selectAllBooks = (state) => state.books;
 
 export default booksSlice.reducer;

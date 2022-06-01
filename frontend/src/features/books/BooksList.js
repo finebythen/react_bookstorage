@@ -11,13 +11,13 @@ import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBooks } from './booksSlice';
+import { getBooks, selectAllBooks } from './booksSlice';
 
 const BooksList = () => {
 
     const dispatch = useDispatch();
-
-    const { books } = useSelector((state) => state.books);
+    
+    const books = useSelector(selectAllBooks);
 
     useEffect(() => {
         dispatch(getBooks());
@@ -43,19 +43,19 @@ const BooksList = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {books.map((item) => (
+                        { books.books && books.books.map(item => (
                             <TableRow
                                 key={item.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">{item.title}</TableCell>
-                                <TableCell align="right">{item.description}</TableCell>
+                                <TableCell align="right">{item.description.slice(0, 30)}...</TableCell>
                                 <TableCell align="right">{item.full_author_name}</TableCell>
                                 <TableCell align="right">{item.genre}</TableCell>
                                 <TableCell align="right">{item.pages}</TableCell>
                                 <TableCell align="right">{item.published}</TableCell>
                             </TableRow>
-                        ))}
+                        )) }
                     </TableBody>
                 </Table>
             </TableContainer>

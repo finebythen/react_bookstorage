@@ -89,7 +89,7 @@ class Book(BaseModel):
     description = models.TextField(max_length=500, null=True, blank=True)
     genre = models.CharField(max_length=2, choices=Genre.choices, default=Genre.NO)
     pages = models.PositiveIntegerField(default=0)
-    slug = models.SlugField(null=False, blank=False, unique=True)
+    slug = models.SlugField(null=False, blank=True, unique=True)
     published = models.DateField(null=False, blank=False)
 
     class Meta:
@@ -109,6 +109,7 @@ class Book(BaseModel):
     def save(self, *args, **kwargs):
         self.description = 'No description' if not self.description else self.description
         self.slug = slugify(f'{self.author}-{self.title}') if not self.slug else self.slug
+        self.slug = slugify(f'{self.author}-{self.title}') if len(self.slug) == 0 and isinstance(self.slug, str) else self.slug
         super(Book, self).save(*args, **kwargs)
     
     def get_absolute_url(self):

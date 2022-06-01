@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { selectAllAuthors } from '../authors/authorsSlice';
 import { postBook } from './booksSlice';
+import { Link } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -30,20 +31,20 @@ const BooksCreate = () => {
     const onDateChanged = (e) => setDate(e.target.value);
     const onAuthorChanged = (e) => setAuthor(e.target.value);
 
-    const canSave = [title, content, genre, pages, date, author].every(Boolean) && addRequestStatus === 'idle';
+    const canSave = [title, genre, pages, date, author].every(Boolean) && addRequestStatus === 'idle';
 
     const onSavePostClicked = () => {
         if (canSave) {
             try {
                 setAddRequestStatus('pending');
 
-                // try to get user_id from jwt token in local storage
                 dispatch(postBook({
                     author,
                     title,
                     description: content,
                     genre,
                     pages,
+                    slug: '',
                     published: date,
                     created_by: user.user_id
                 })).unwrap();
@@ -100,6 +101,9 @@ const BooksCreate = () => {
                 </select>
                 <Stack sx={{ my: "1rem" }} spacing={2} direction="row">
                     <Button variant="contained" onClick={onSavePostClicked} disabled={!canSave} >Create Book</Button>
+                    <Button variant="contained">
+                        <Link className="link-create-book" to="/book">Back to books</Link>
+                    </Button>
                 </Stack>
             </form>
         </section>
